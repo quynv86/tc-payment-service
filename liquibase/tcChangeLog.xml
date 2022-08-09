@@ -1,0 +1,205 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd"
+                   changeLogId="f5ebcd0f-37e7-4760-b876-63b0d29f5f99">
+    <changeSet author="quynv" id="1648780941">
+        <createTable tableName="partner">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="billing_staff_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="billing_shop_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_secret" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="note" type="TEXT"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="quynv" id="1648782454">
+        <createTable tableName="currency">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="bit">
+                <constraints nullable="false"/>
+            </column>
+            <column name="note" type="TEXT"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="quynv" id="1648783120">
+        <createTable tableName="customer">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="quynv" id="1648783316">
+        <createTable tableName="pay_log"
+                     remarks="Log HTTP request from partner">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="partner_trans_ref" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+        <modifySql>
+            <append
+                    value="partition by range columns (created_date)(
+                    PARTITION p_202203 VALUES LESS THAN ('2022-04-01'),
+                    PARTITION p_202204 VALUES LESS THAN ('2022-05-01'),
+                    PARTITION p_future VALUES LESS THAN MAXVALUE
+                    )"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="quynv" id="1648783318">
+        <createTable tableName="payment">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="partner_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_trans_ref" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="double">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pay_log_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+        <modifySql>
+            <append
+                    value="partition by range columns (created_date)(
+                    PARTITION p_202203 VALUES LESS THAN ('2022-04-01'),
+                    PARTITION p_202204 VALUES LESS THAN ('2022-05-01'),
+                    PARTITION p_future VALUES LESS THAN MAXVALUE
+                    )"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="quynv" id="1648784910">
+        <insert tableName="currency">
+            <column name="code" value="USD"/>
+            <column name="name" value="US dollar"/>
+            <column name="note" value="Initially created by the system"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="created_by" value="system"/>
+            <column name="last_modified_by" value="system"/>
+            <column name="created_date" valueDate="NOW()"/>
+            <column name="last_modified_date" valueDate="NOW()"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="quynv" id="1648786038">
+        <addColumn tableName="partner">
+            <column name="enabled" type="bit" afterColumn="note"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="quynv" id="1648785873">
+        <insert tableName="partner">
+            <column name="name" value="WING"/>
+            <column name="billing_staff_id" value="1"/>
+            <column name="billing_shop_id" value="1"/>
+            <column name="client_secret" value="3deada2bd44323abce833de1e86183b459adc077"/>
+            <column name="note" value="Initially created by the system"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="created_by" value="system"/>
+            <column name="last_modified_by" value="system"/>
+            <column name="created_date" valueDate="NOW()"/>
+            <column name="last_modified_date" valueDate="NOW()"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="quynv" id="1648798250">
+        <addColumn tableName="pay_log">
+            <column name="remote_ip" type="varchar(100)" afterColumn="partner_trans_ref"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="quynv" id="1648799493">
+        <createIndex
+                indexName="idx_payLog_partnerTransRef"
+                tableName="pay_log">
+            <column name="partner_trans_ref"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="quynv" id="1648799568">
+        <createIndex
+                indexName="idx_payment_partnerTransRef"
+                tableName="payment">
+            <column name="partner_trans_ref"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="quynv" id="1648800843">
+        <addColumn tableName="payment">
+            <column name="trans_ref" type="varchar(100)" beforeColumn="partner_trans_ref"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
