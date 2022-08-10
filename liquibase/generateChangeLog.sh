@@ -4,5 +4,3 @@ liquibase \
   --username=root \
   --password=123456 \
   generateChangeLog
-
-
